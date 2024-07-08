@@ -1,11 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.net.http.HttpRequest;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class EndpointHandler {
   public static void getPath(final Socket socket) {
@@ -15,15 +11,14 @@ public class EndpointHandler {
 
       System.out.println("Received: " + line);
 
-      String[] httpRequest = line.split(" ");
+      String[] httpRequestStr = line.split(" ");
+      final HttpRequest request = HttpRequest.with(httpRequestStr);
 
-      final AtomicInteger counter = new AtomicInteger(0);
-      Arrays.stream(httpRequest).iterator().forEachRemaining(
-          s -> System.out.println(counter.get() + " -> " + httpRequest[counter.getAndIncrement()])
-      );
+      System.out.println(request);
+
       final var output = socket.getOutputStream();
 
-      switch(httpRequest[1]) {
+      switch(request.getPath()) {
        case "/" -> output.write(HttpUtils.OK_200_MESSAGE_BYTES);
        default -> output.write(HttpUtils.NOT_FOUND_404_MESSAGE_BYTES);
       }

@@ -7,13 +7,7 @@ public class Main {
      try (final ServerSocket serverSocket = new ServerSocket(4221)) {
        serverSocket.setReuseAddress(true);
        final Socket socket = serverSocket.accept();
-       final var input = socket.getInputStream().readAllBytes();
-       final var str = new String(input);
-
-       System.out.println(str);
-
-       System.out.println("accepted new connection");
-       socket.getOutputStream().write(HttpUtils.OUTPUT_BYTE);
+       EndpointHandler.getPath(socket);
      } catch (IOException e) {
        System.out.println("IOException: " + e.getMessage());
      }

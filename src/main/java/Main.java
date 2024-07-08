@@ -11,6 +11,7 @@ public class Main {
        serverSocket.setReuseAddress(true);
        clientSocket = serverSocket.accept();
        System.out.println("accepted new connection");
+       clientSocket.getOutputStream().write(HttpUtils.OUTPUT_BYTE);
      } catch (IOException e) {
        System.out.println("IOException: " + e.getMessage());
      }

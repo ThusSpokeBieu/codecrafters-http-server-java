@@ -29,4 +29,15 @@ public record HttpEndpoint<I, O>(
     Builder handler(final HttpHandler aHandler);
     HttpEndpoint build();
   }
+
+  @Override
+  public String toString() {
+    return "HttpEndpoint{" +
+        "path=" + path +
+        ", methods=" + methods +
+        ", headers=" + headers +
+        ", bodyType=" + bodyType +
+        ", handler=" + handler +
+        '}';
+  }
 }

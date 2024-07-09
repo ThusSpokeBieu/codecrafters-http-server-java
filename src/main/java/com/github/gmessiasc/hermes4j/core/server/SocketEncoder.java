@@ -7,9 +7,12 @@ import com.github.gmessiasc.hermes4j.core.responses.HttpResponse;
 import com.github.gmessiasc.hermes4j.core.responses.HttpResponseBuilder;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 
 public final class SocketEncoder {
+  private static final Logger logger = Logger.getLogger(SocketEncoder.class.getName());
+
   private SocketEncoder() {
   }
 
@@ -60,10 +63,12 @@ public final class SocketEncoder {
 
     sb.append("\r\n");
 
-    sb.append(response.body());
+    if(response.body().isPresent()) {
+      sb.append(response.body().get());
+    }
 
     final String str = sb.toString();
-    System.out.println(str);
+    logger.info("Returned: " + str);
     return str.getBytes();
   }
 }

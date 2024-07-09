@@ -3,14 +3,18 @@ package com.github.gmessiasc.hermes4j.core.server;
 import com.github.gmessiasc.hermes4j.core.endpoints.HttpEndpoint;
 import com.github.gmessiasc.hermes4j.core.requests.HttpRequest;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
 
 public class HttpServer implements AutoCloseable {
+  private static final Logger logger = Logger.getLogger(HttpServer.class.getName());
+
   private final int port;
   private final Set<HttpEndpoint> endpoints;
   private final ExecutorService executor;
@@ -49,6 +53,9 @@ public class HttpServer implements AutoCloseable {
 
   public void handleSocket(final Socket socket) throws IOException {
     final HttpRequest request = SocketDecoder.decode(socket);
+    logger.info("HttpRequest: " + request);
+
+    endpoints.forEach(e -> logger.info("Endpoint: " + e.toString()));
     final var endpoint = endpoints.stream()
         .filter(e -> e.path().equals(request.path()))
         .filter(e -> e.methods().contains(request.method()))
@@ -66,9 +73,17 @@ public class HttpServer implements AutoCloseable {
     this.serverSocket = new ServerSocket(port);
     serverSocket.setReuseAddress(true);
 
+    this.isRunning = true;
+
     while(isRunning()) {
       final var socket = serverSocket.accept();
-      executor.submit(() -> handleSocket(socket));
+      executor.submit(() -> {
+        try {
+          handleSocket(socket);
+        } catch (IOException err) {
+          throw new UncheckedIOException(err);
+        }
+      });
     }
 
     close();

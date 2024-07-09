@@ -1,3 +1,5 @@
+package com.github.gmessiasc.hermes4j.utils;
+
 public final class HttpUtils {
   private HttpUtils(){}
 

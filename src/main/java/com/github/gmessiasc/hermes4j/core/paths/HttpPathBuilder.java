@@ -13,14 +13,16 @@ public final class HttpPathBuilder {
     validatePath(pathString);
 
     String[] paths = pathString.split(SLASH);
-    return new HttpPath(paths, paths.length, Collections.emptyMap());
+    return new HttpPath(paths, Collections.emptyMap());
   }
 
-  public static HttpPath with(final String pathString, final HashMap<String, Integer> pathParams) {
+  public static HttpPath with(
+      final String pathString,
+      final HashMap<String, Integer> pathParams) {
     validatePath(pathString);
 
     String[] paths = pathString.split(SLASH);
-    return new HttpPath(paths, paths.length, pathParams);
+    return new HttpPath(paths, pathParams);
   }
 
   private static void validatePath(final String pathString) {

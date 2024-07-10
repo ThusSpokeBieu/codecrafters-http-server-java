@@ -1,21 +1,21 @@
 package com.github.gmessiasc.hermes4j.core.endpoints;
 
+import com.github.gmessiasc.hermes4j.core.codecs.Codec;
 import com.github.gmessiasc.hermes4j.core.handlers.HttpHandler;
 import com.github.gmessiasc.hermes4j.core.headers.HttpHeader;
 import com.github.gmessiasc.hermes4j.core.headers.mime.MimeTypes;
 import com.github.gmessiasc.hermes4j.core.methods.HttpMethod;
-import com.github.gmessiasc.hermes4j.core.paths.HttpPath;
-import java.lang.reflect.Type;
+import com.github.gmessiasc.hermes4j.core.paths.PathTemplate;
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public record HttpEndpoint<I, O>(
-    HttpPath path,
+    PathTemplate path,
     Set<HttpMethod> methods,
     List<HttpHeader> headers,
-    Optional<Type> bodyType,
-    HttpHandler handler
+    HttpHandler handler,
+    Codec codec
 ) {
   public interface Builder {
     Builder path(final String path);
@@ -25,9 +25,9 @@ public record HttpEndpoint<I, O>(
     Builder addHeader(final HttpHeader header);
     Builder addHeader(final String key, String... values);
     Builder accept(final MimeTypes... mimeTypes);
-    Builder body(final Type body);
     Builder handler(final HttpHandler aHandler);
-    HttpEndpoint build();
+    Builder codec(final Codec codec);
+    HttpEndpoint build() throws IOException;
   }
 
   @Override
@@ -36,8 +36,8 @@ public record HttpEndpoint<I, O>(
         "path=" + path +
         ", methods=" + methods +
         ", headers=" + headers +
-        ", bodyType=" + bodyType +
         ", handler=" + handler +
+        ", codec=" + codec +
         '}';
   }
 }

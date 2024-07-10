@@ -1,28 +1,27 @@
 package com.github.gmessiasc.hermes4j.core.endpoints;
 
+import com.github.gmessiasc.hermes4j.core.codecs.Codec;
+import com.github.gmessiasc.hermes4j.core.codecs.Codecs;
 import com.github.gmessiasc.hermes4j.core.handlers.HttpHandler;
 import com.github.gmessiasc.hermes4j.core.headers.HttpHeader;
 import com.github.gmessiasc.hermes4j.core.headers.mime.MimeTypes;
 import com.github.gmessiasc.hermes4j.core.methods.HttpMethod;
-import com.github.gmessiasc.hermes4j.core.paths.HttpPath;
-import com.github.gmessiasc.hermes4j.core.paths.HttpPathBuilder;
+import com.github.gmessiasc.hermes4j.core.paths.PathTemplate;
 import com.github.gmessiasc.hermes4j.utils.HeaderUtils;
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public class EndpointBuilder implements HttpEndpoint.Builder {
-
-  HttpPath path;
+  PathTemplate path;
   Set<HttpMethod> httpMethods = new HashSet<>();
   List<HttpHeader> httpHeaders = new ArrayList<>();
-  Type bodyType = null;
   HttpHandler handler = null;
+  Codec codec = Codecs.HTTP_CODEC;
 
   public static EndpointBuilder builder() {
     return new EndpointBuilder();
@@ -30,7 +29,7 @@ public class EndpointBuilder implements HttpEndpoint.Builder {
 
   @Override
   public HttpEndpoint.Builder path(final String path) {
-    this.path = HttpPathBuilder.with(path);
+    this.path = PathTemplate.with(path);
     return this;
   }
 
@@ -82,25 +81,28 @@ public class EndpointBuilder implements HttpEndpoint.Builder {
   }
 
   @Override
-  public HttpEndpoint.Builder body(final Type bodyType) {
-    this.bodyType = bodyType;
-    return this;
-  }
-
-  @Override
   public HttpEndpoint.Builder handler(final HttpHandler aHandler) {
     this.handler = aHandler;
     return this;
   }
 
   @Override
-  public HttpEndpoint build() {
+  public HttpEndpoint.Builder codec(final Codec codec) {
+    this.codec = codec;
+    return this;
+  }
+
+  @Override
+  public HttpEndpoint build() throws IOException {
+    if(codec == null) throw new IOException("HttpEndpoint's codec must be initialized");
+    if(handler == null) throw new IOException("HttpEndpoint's handle must be initialized");
+
     return new HttpEndpoint(
         path,
         Collections.unmodifiableSet(httpMethods),
         Collections.unmodifiableList(httpHeaders),
-        Optional.ofNullable(bodyType),
-        handler
+        handler,
+        codec
     );
   }
 }

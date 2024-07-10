@@ -14,7 +14,9 @@ public class MyServer {
         .builder()
         .port(PORT)
         .executor(EXECUTOR)
-        .addEndpoints(MainRoute.mainRoute())
+        .addEndpoints(
+            MainRoute.mainRoute(),
+            MainRoute.echoRoute())
         .build();
   }
 }

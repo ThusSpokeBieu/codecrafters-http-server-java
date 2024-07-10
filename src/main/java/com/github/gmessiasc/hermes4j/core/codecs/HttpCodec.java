@@ -1,41 +1,40 @@
-package com.github.gmessiasc.hermes4j.core.server;
+package com.github.gmessiasc.hermes4j.core.codecs;
 
 import com.github.gmessiasc.hermes4j.core.headers.HttpHeader;
-import com.github.gmessiasc.hermes4j.core.headers.HttpStatus;
-import com.github.gmessiasc.hermes4j.core.headers.mime.MimeTypes;
+import com.github.gmessiasc.hermes4j.core.requests.HttpRequest;
+import com.github.gmessiasc.hermes4j.core.requests.HttpRequestBuilder;
 import com.github.gmessiasc.hermes4j.core.responses.HttpResponse;
-import com.github.gmessiasc.hermes4j.core.responses.HttpResponseBuilder;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.logging.Logger;
 
+public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
+  private static final Logger logger = Logger.getLogger(HttpCodec.class.getName());
 
-public final class SocketEncoder {
-  private static final Logger logger = Logger.getLogger(SocketEncoder.class.getName());
+  @Override
+  public HttpRequest decode(final Socket socket) {
+    try (final var inputStream = socket.getInputStream()) {
+      final var reader = new BufferedReader(new InputStreamReader(inputStream));
+      String line = reader.readLine();
+      logger.info("Received: " + line);
 
-  private SocketEncoder() {
+      String[] httpRequestStr = line.split(" ");
+      return HttpRequestBuilder.with(httpRequestStr);
+    } catch (IOException exception) {
+      throw new RuntimeException(exception);
+    }
   }
 
-  public static HttpResponse RESPONSE_OK = HttpResponseBuilder
-      .builder()
-      .status(HttpStatus.OK)
-      .body("abc")
-      .withContentType(MimeTypes.TEXT_PLAIN)
-      .withContentLength()
-      .build();
-
-  public static HttpResponse RESPONSE_NOT_FOUND = HttpResponseBuilder
-      .builder()
-      .status(HttpStatus.NOT_FOUND)
-      .build();
-
-  public static void encode(final Socket socket, final HttpResponse response) throws IOException {
+  @Override
+  public void encode(final Socket socket, final HttpResponse response) throws IOException {
     final var bytes = encode(response);
     final var output = socket.getOutputStream();
     output.write(bytes);
   }
 
-  private static byte[] encode(final HttpResponse response) {
+  private byte[] encode(final HttpResponse response) {
     final var sb = new StringBuilder();
     final var httpVersion = response.httpVersion();
     final var status = response.status();

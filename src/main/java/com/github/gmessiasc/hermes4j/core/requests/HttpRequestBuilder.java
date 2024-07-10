@@ -3,8 +3,10 @@ package com.github.gmessiasc.hermes4j.core.requests;
 import com.github.gmessiasc.hermes4j.core.methods.HttpMethod;
 import com.github.gmessiasc.hermes4j.core.paths.HttpPath;
 import com.github.gmessiasc.hermes4j.core.paths.HttpPathBuilder;
+import com.github.gmessiasc.hermes4j.core.paths.PathParams;
 
 public class HttpRequestBuilder implements HttpRequest.Builder {
+  PathParams pathParams;
 
   @Override
   public HttpRequest.Builder method(final HttpMethod method) {
@@ -13,6 +15,11 @@ public class HttpRequestBuilder implements HttpRequest.Builder {
 
   @Override
   public HttpRequest.Builder path(final HttpPath path) {
+    return null;
+  }
+
+  @Override
+  public HttpRequest.Builder pathParams(final PathParams pathParams) {
     return null;
   }
 
@@ -31,6 +38,10 @@ public class HttpRequestBuilder implements HttpRequest.Builder {
     final var path = HttpPathBuilder.with(splittedHttpRequest[1]);
     final var httpVersion = splittedHttpRequest[2];
 
-    return new HttpRequest(method, path, httpVersion);
+    return new HttpRequest(
+        method,
+        path,
+        new PathParams(),
+        httpVersion);
   }
 }

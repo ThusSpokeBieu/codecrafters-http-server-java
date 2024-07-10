@@ -25,7 +25,7 @@ public class FilesHandler implements HttpHandler {
   public HttpResponse apply(final HttpRequest request) {
     try {
       final var fileName = request.pathParams().getString("filename");
-      final Path path = Path.of("/tmp/" + fileName);
+      final Path path = Path.of("/tmp/data/codecrafters.io/http-server-tester/" + fileName);
 
       logger.info("FILE-NAME: " + fileName);
       logger.info("PATH: " + path);

@@ -11,8 +11,10 @@ import com.github.gmessiasc.hermes4j.shared.exceptions.NoStackTraceException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 public class FilesHandler implements HttpHandler {
+  private static final Logger logger = Logger.getLogger(FilesHandler.class.getName());
 
   private static final HttpResponse NOT_FOUND = HttpResponseBuilder
       .builder()
@@ -25,7 +27,11 @@ public class FilesHandler implements HttpHandler {
       final var fileName = request.pathParams().getString("filename");
       final Path path = Path.of("/tmp/" + fileName);
 
+      logger.info("FILE-NAME: " + fileName);
+      logger.info("PATH: " + path);
+
       if(!Files.exists(path) || Files.isDirectory(path)) {
+        logger.info("NÃO EXISTE OU É DIRETORIO");
         return NOT_FOUND;
       }
 
@@ -39,6 +45,7 @@ public class FilesHandler implements HttpHandler {
 
     } catch (final NoStackTraceException | IOException e) {
       e.printStackTrace();
+      logger.severe(e.getMessage());
       return NOT_FOUND;
     }
   }

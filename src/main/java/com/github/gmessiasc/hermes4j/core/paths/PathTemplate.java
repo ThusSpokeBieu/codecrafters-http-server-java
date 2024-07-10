@@ -43,9 +43,6 @@ public record PathTemplate(
     if (pathString.length == 0 && !paths.isEmpty()) return false;
     if (paths.isEmpty() && pathParams.isEmpty() && pathString.length > 1) return false;
 
-    logger.info("Path String:" + Arrays.toString(pathString));
-    logger.info("Paths :" + paths);
-
     boolean isValid = true;
 
     for (Map.Entry<String, Integer> entry : paths.entrySet()) {

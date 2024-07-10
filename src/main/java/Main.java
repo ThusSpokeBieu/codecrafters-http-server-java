@@ -6,7 +6,11 @@ public class Main {
      try (final HttpServer server = MyServer.getServer()) {
        server.start();
      } catch (IOException e) {
+       e.printStackTrace();
        System.out.println("IOException: " + e.getMessage());
+     } catch (Exception e) {
+       e.printStackTrace();
+       System.out.println("Exception: " + e.getMessage());
      }
   }
 }

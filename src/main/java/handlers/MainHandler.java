@@ -8,7 +8,6 @@ import com.github.gmessiasc.hermes4j.core.responses.HttpResponseBuilder;
 
 public class MainHandler implements HttpHandler {
 
-  private static final HttpHandler INSTANCE = new MainHandler();
   private static final HttpResponse response = HttpResponseBuilder
       .builder()
       .status(HttpStatus.OK)
@@ -19,7 +18,4 @@ public class MainHandler implements HttpHandler {
     return response;
   }
 
-  public static HttpHandler get() {
-    return INSTANCE;
-  }
 }

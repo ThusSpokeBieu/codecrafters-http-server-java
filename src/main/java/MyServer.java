@@ -17,7 +17,8 @@ public class MyServer {
         .addEndpoints(
             MainRoute.mainRoute(),
             MainRoute.echoRoute(),
-            MainRoute.userAgentRoute())
+            MainRoute.userAgentRoute(),
+            MainRoute.filesRoute())
         .build();
   }
 }

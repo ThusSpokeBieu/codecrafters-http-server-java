@@ -39,4 +39,14 @@ public class MainRoute {
         .handler(new UserAgentHandler())
         .build();
   }
+
+  public static HttpEndpoint filesRoute() throws IOException {
+    return EndpointBuilder
+        .builder()
+        .path("/files/{filename}")
+        .codec(Codecs.HTTP_CODEC)
+        .methods(HttpMethod.GET)
+        .handler(new UserAgentHandler())
+        .build();
+  }
 }

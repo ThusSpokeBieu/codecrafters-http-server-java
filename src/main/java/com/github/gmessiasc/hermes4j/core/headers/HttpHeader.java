@@ -1,22 +1,29 @@
 package com.github.gmessiasc.hermes4j.core.headers;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.AbstractMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
-public record HttpHeader(
-    String key,
-    Set<String> values) {
-
+public class HttpHeader {
   private static Logger logger = Logger.getLogger(HttpHeader.class.getName());
 
-  public static HttpHeader with(String key, String... values) {
-    return new HttpHeader(key, Set.of(values));
+  public static Optional<Map.Entry<String, Set<String>>> with(String key, String... values) {
+    try {
+      final var header = new AbstractMap.SimpleEntry<>(
+          key,
+          Set.of(values)
+      );
+
+      return Optional.of(header);
+    } catch(Exception e) {
+      e.printStackTrace();
+      throw e;
+    }
   }
 
-  public static Optional<HttpHeader> with(String keyAndValue) {
+  public static Optional<Map.Entry<String, Set<String>>> with(String keyAndValue) {
     try {
       final String[] splittedKeyAndValue = keyAndValue.split(":\\s*");
       final String key = splittedKeyAndValue[0];
@@ -29,25 +36,11 @@ public record HttpHeader(
 
       final String[] splittedValues = values.split(",\\s*");
 
-      final var header = new HttpHeader(key, Set.of(splittedValues));
-
-      return Optional.of(header);
+      return with(key, splittedValues);
     } catch(Exception e) {
       e.printStackTrace();
       throw e;
     }
   }
 
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    final HttpHeader that = (HttpHeader) o;
-    return Objects.equals(key, that.key);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(key);
-  }
 }

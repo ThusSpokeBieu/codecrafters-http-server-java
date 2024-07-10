@@ -4,22 +4,24 @@ import com.github.gmessiasc.hermes4j.core.codecs.Codec;
 import com.github.gmessiasc.hermes4j.core.codecs.Codecs;
 import com.github.gmessiasc.hermes4j.core.handlers.HttpHandler;
 import com.github.gmessiasc.hermes4j.core.headers.HttpHeader;
+import com.github.gmessiasc.hermes4j.core.headers.exceptions.WrongHeaderException;
 import com.github.gmessiasc.hermes4j.core.headers.mime.MimeTypes;
 import com.github.gmessiasc.hermes4j.core.methods.HttpMethod;
 import com.github.gmessiasc.hermes4j.core.paths.PathTemplate;
 import com.github.gmessiasc.hermes4j.utils.HeaderUtils;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class EndpointBuilder implements HttpEndpoint.Builder {
   PathTemplate path;
   Set<HttpMethod> httpMethods = new HashSet<>();
-  List<HttpHeader> httpHeaders = new ArrayList<>();
+  Map<String, Set<String>> httpHeaders = new HashMap<>();
   HttpHandler handler = null;
   Codec codec = Codecs.HTTP_CODEC;
 
@@ -49,21 +51,31 @@ public class EndpointBuilder implements HttpEndpoint.Builder {
   }
 
   @Override
-  public HttpEndpoint.Builder headers(final HttpHeader... headers) {
-    this.httpHeaders.addAll(List.of(headers));
+  public HttpEndpoint.Builder headers(final Map<String, Set<String>> headers) {
+    httpHeaders.putAll(headers);
     return this;
   }
 
   @Override
-  public HttpEndpoint.Builder addHeader(final HttpHeader header) {
-    this.httpHeaders.add(header);
+  public HttpEndpoint.Builder addHeader(final Map.Entry<String, Set<String>> header) {
+    httpHeaders.put(header.getKey(), header.getValue());
     return this;
+  }
+
+  @Override
+  public HttpEndpoint.Builder addHeader(final String keyAndValue) {
+    final var header = HttpHeader.with(keyAndValue);
+    if (header.isEmpty()) throw WrongHeaderException.err();
+
+    return addHeader(header.get());
   }
 
   @Override
   public HttpEndpoint.Builder addHeader(final String key, final String... values) {
-    final var httpHeader = HttpHeader.with(key, values);
-    return addHeader(httpHeader);
+    final var header = HttpHeader.with(key, values);
+    if (header.isEmpty()) throw WrongHeaderException.err();
+
+    return addHeader(header.get());
   }
 
   @Override
@@ -72,7 +84,7 @@ public class EndpointBuilder implements HttpEndpoint.Builder {
       final var httpHeader = HttpHeader.with(
           HeaderUtils.ACCEPT,
           mime.getValue()
-      );
+      ).get();
 
       addHeader(httpHeader);
     }
@@ -100,7 +112,7 @@ public class EndpointBuilder implements HttpEndpoint.Builder {
     return new HttpEndpoint(
         path,
         Collections.unmodifiableSet(httpMethods),
-        Collections.unmodifiableList(httpHeaders),
+        Collections.unmodifiableMap(httpHeaders),
         handler,
         codec
     );

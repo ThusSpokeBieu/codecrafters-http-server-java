@@ -87,21 +87,21 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
     sb.append(status.getStatusMessage());
     sb.append("\r\n");
 
-    for (final HttpHeader header : response.headers()) {
-      sb.append(header.key());
-      sb.append(": ");
+    response.headers().forEach(
+        (key, values) -> {
+          sb.append(key);
+          sb.append(": ");
 
-      int counter = 1;
-      for (final String value : header.values()) {
-        sb.append(value);
-        if (counter < header.values().size()) {
-          sb.append(", ");
-          counter++;
+          int counter = 1;
+          for (final String value : values) {
+            sb.append(value);
+            if (counter < values.size()) {
+              sb.append(", ");
+              counter++;
+            }
         }
-      }
-
-      sb.append("\r\n");
-    }
+        sb.append("\r\n");
+    });
 
     sb.append("\r\n");
 
@@ -127,7 +127,7 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
     while(line != null) {
 
       if(line.isEmpty()) break;
-      final Optional<HttpHeader> optionalHeader = HttpHeader.with(line);
+      final var optionalHeader = HttpHeader.with(line);
 
       if(optionalHeader.isEmpty()) {
         line = reader.readLine();
@@ -137,8 +137,8 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
       final var header = optionalHeader.get();
 
       headers.merge(
-          header.key(),
-          header.values(),
+          header.getKey(),
+          header.getValue(),
           (currentSet, newSet) -> {
             currentSet.addAll(newSet);
             return currentSet;

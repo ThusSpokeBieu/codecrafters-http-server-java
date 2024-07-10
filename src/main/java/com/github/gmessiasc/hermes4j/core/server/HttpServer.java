@@ -61,9 +61,10 @@ public class HttpServer implements AutoCloseable {
     final var optionalEndpoint = endpoints.stream()
         .filter(e -> e.path().verify(request))
         .filter(e -> e.methods().contains(request.method()))
-        .findFirst();
+        .findAny();
 
     if (optionalEndpoint.isEmpty()) {
+
       Codecs.HTTP_CODEC.encode(socket, Responses.NOT_FOUND);
       return;
     }
@@ -87,7 +88,6 @@ public class HttpServer implements AutoCloseable {
 
     while(isRunning()) {
       final var socket = serverSocket.accept();
-      socket.setKeepAlive(true);
       socket.setReuseAddress(true);
       socket.setSoTimeout(50000);
       socket.setTcpNoDelay(true);

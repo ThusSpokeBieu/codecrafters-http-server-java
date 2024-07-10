@@ -3,8 +3,7 @@ package routes;
 import com.github.gmessiasc.hermes4j.core.codecs.Codecs;
 import com.github.gmessiasc.hermes4j.core.endpoints.EndpointBuilder;
 import com.github.gmessiasc.hermes4j.core.endpoints.HttpEndpoint;
-import com.github.gmessiasc.hermes4j.core.headers.mime.MimeTypes;
-import com.github.gmessiasc.hermes4j.utils.StrUtils;
+import com.github.gmessiasc.hermes4j.core.methods.HttpMethod;
 import handlers.EchoHandler;
 import handlers.MainHandler;
 import handlers.UserAgentHandler;
@@ -14,10 +13,9 @@ public class MainRoute {
   public static HttpEndpoint mainRoute() throws IOException {
     return EndpointBuilder
         .builder()
-        .path(StrUtils.SLASH)
-        .accept(MimeTypes.ALL)
+        .path("/")
         .codec(Codecs.HTTP_CODEC)
-        .methods("GET")
+        .methods(HttpMethod.GET)
         .handler(new MainHandler())
         .build();
   }
@@ -27,7 +25,7 @@ public class MainRoute {
         .builder()
         .path("/echo/{str}")
         .codec(Codecs.HTTP_CODEC)
-        .methods("GET")
+        .methods(HttpMethod.GET)
         .handler(new EchoHandler())
         .build();
   }
@@ -37,7 +35,7 @@ public class MainRoute {
         .builder()
         .path("/user-agent")
         .codec(Codecs.HTTP_CODEC)
-        .methods("GET")
+        .methods(HttpMethod.GET)
         .handler(new UserAgentHandler())
         .build();
   }

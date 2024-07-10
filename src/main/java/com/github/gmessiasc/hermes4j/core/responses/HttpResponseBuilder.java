@@ -3,18 +3,19 @@ package com.github.gmessiasc.hermes4j.core.responses;
 import com.github.gmessiasc.hermes4j.core.headers.HttpHeader;
 import com.github.gmessiasc.hermes4j.core.headers.HttpStatus;
 import com.github.gmessiasc.hermes4j.core.headers.HttpVersion;
+import com.github.gmessiasc.hermes4j.core.headers.exceptions.WrongHeaderException;
 import com.github.gmessiasc.hermes4j.core.headers.mime.MimeTypes;
 import com.github.gmessiasc.hermes4j.utils.StrUtils;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class HttpResponseBuilder implements HttpResponse.Builder {
 
   HttpVersion httpVersion = HttpVersion.HTTP_1_1;
   HttpStatus httpStatus = HttpStatus.OK;
-  List<HttpHeader> httpHeaders = new ArrayList<>();
+  Map<String, Set<String>> httpHeaders = new HashMap<>();
   Optional<String> body = Optional.empty();
   Optional<byte[]> bodyByte = Optional.empty();
 
@@ -36,21 +37,33 @@ public class HttpResponseBuilder implements HttpResponse.Builder {
   }
 
   @Override
-  public HttpResponseBuilder headers(final HttpHeader... headers) {
-    httpHeaders.addAll(List.of(headers));
+  public HttpResponse.Builder headers(final Map<String, Set<String>> headers) {
+    httpHeaders.putAll(headers);
     return this;
   }
 
   @Override
-  public HttpResponseBuilder addHeader(final HttpHeader header) {
-    httpHeaders.add(header);
+  public HttpResponse.Builder addHeader(final Map.Entry<String, Set<String>> header) {
+    httpHeaders.put(header.getKey(), header.getValue());
     return this;
   }
 
   @Override
-  public HttpResponseBuilder addHeader(final String key, final String... values) {
-    final var httpHeader = HttpHeader.with(key, values);
-    return addHeader(httpHeader);
+  public HttpResponse.Builder addHeader(final String keyAndValue) {
+    final var header = HttpHeader.with(keyAndValue);
+
+    if (header.isEmpty()) throw WrongHeaderException.err();
+
+    return addHeader(header.get());
+  }
+
+  @Override
+  public HttpResponse.Builder addHeader(final String key, final String... values) {
+    final var header = HttpHeader.with(key, values);
+
+    if (header.isEmpty()) throw WrongHeaderException.err();
+
+    return addHeader(header.get());
   }
 
   @Override
@@ -88,7 +101,7 @@ public class HttpResponseBuilder implements HttpResponse.Builder {
     return new HttpResponse(
         httpVersion,
         httpStatus,
-        Collections.unmodifiableList(httpHeaders),
+        httpHeaders,
         body,
         bodyByte
     );

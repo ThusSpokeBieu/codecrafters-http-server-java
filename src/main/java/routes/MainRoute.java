@@ -24,7 +24,7 @@ public class MainRoute {
   public static HttpEndpoint echoRoute() throws IOException {
     return EndpointBuilder
         .builder()
-        .path("/echo/{echo}")
+        .path("/echo/{str}")
         .codec(Codecs.HTTP_CODEC)
         .methods("GET")
         .handler(new EchoHandler())

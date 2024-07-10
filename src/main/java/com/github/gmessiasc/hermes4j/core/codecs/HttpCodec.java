@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
@@ -15,7 +16,8 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
 
   @Override
   public HttpRequest decode(final Socket socket) {
-    try (final var inputStream = socket.getInputStream()) {
+    try {
+      final var inputStream = socket.getInputStream();
       final var reader = new BufferedReader(new InputStreamReader(inputStream));
       String line = reader.readLine();
       logger.info("Received: " + line);
@@ -29,9 +31,15 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
 
   @Override
   public void encode(final Socket socket, final HttpResponse response) throws IOException {
-    final var bytes = encode(response);
-    final var output = socket.getOutputStream();
-    output.write(bytes);
+    try {
+      final var bytes = encode(response);
+      logger.info("Bytes: " + Arrays.toString(bytes));
+      final var output = socket.getOutputStream();
+      output.write(bytes);
+    } catch(IOException ex) {
+      logger.info("" + ex);
+      throw ex;
+    }
   }
 
   private byte[] encode(final HttpResponse response) {

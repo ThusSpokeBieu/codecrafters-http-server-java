@@ -11,7 +11,7 @@ public class EchoHandler implements HttpHandler {
 
   @Override
   public HttpResponse apply(final HttpRequest request) {
-    final String echo = request.pathParams().getString("echo");
+    final String echo = request.pathParams().getString("str");
 
     return HttpResponseBuilder
         .builder()

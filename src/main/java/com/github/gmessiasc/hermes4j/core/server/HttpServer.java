@@ -87,6 +87,11 @@ public class HttpServer implements AutoCloseable {
 
     while(isRunning()) {
       final var socket = serverSocket.accept();
+      socket.setKeepAlive(true);
+      socket.setReuseAddress(true);
+      socket.setSoTimeout(50000);
+      socket.setTcpNoDelay(true);
+
       executor.submit(() -> {
         try {
           handleSocket(socket);

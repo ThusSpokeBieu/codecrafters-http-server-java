@@ -5,6 +5,7 @@ import com.github.gmessiasc.hermes4j.core.endpoints.EndpointBuilder;
 import com.github.gmessiasc.hermes4j.core.endpoints.HttpEndpoint;
 import com.github.gmessiasc.hermes4j.core.methods.HttpMethod;
 import handlers.EchoHandler;
+import handlers.FilesHandler;
 import handlers.MainHandler;
 import handlers.UserAgentHandler;
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class MainRoute {
         .path("/files/{filename}")
         .codec(Codecs.HTTP_CODEC)
         .methods(HttpMethod.GET)
-        .handler(new UserAgentHandler())
+        .handler(new FilesHandler())
         .build();
   }
 }

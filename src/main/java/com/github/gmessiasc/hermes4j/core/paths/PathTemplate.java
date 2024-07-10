@@ -40,7 +40,7 @@ public record PathTemplate(
 
   public boolean verify(final String[] pathString) {
     if (pathString.length == 0 && paths.isEmpty()) return true;
-      if (pathString.length == 0 && !paths.isEmpty()) return false;
+    if (pathString.length == 0 && !paths.isEmpty()) return false;
     if (paths.isEmpty() && pathParams.isEmpty() && pathString.length > 1) return false;
 
     logger.info("Path String:" + Arrays.toString(pathString));

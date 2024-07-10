@@ -46,7 +46,7 @@ public class MainRoute {
         .builder()
         .path("/files/{filename}")
         .codec(Codecs.HTTP_CODEC)
-        .methods(HttpMethod.GET)
+        .methods("GET", "POST")
         .handler(new FilesHandler())
         .build();
   }

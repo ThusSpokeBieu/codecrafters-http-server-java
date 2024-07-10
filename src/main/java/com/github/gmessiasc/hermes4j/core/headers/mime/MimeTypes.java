@@ -28,6 +28,7 @@ public enum MimeTypes {
 
   // Outros
   ZIP("application/zip"),
+  OCTET_STREAM("application/octet-stream"),
   EPUB("application/epub+zip"),
   JAVASCRIPT("text/javascript"),
   OTF("font/otf"),

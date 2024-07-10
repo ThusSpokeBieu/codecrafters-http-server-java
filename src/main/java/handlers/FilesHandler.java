@@ -39,7 +39,7 @@ public class FilesHandler implements HttpHandler {
           .builder()
           .status(HttpStatus.OK)
           .body(Files.readString(path))
-          .withContentType(MimeTypes.TEXT_PLAIN)
+          .withContentType(MimeTypes.OCTET_STREAM)
           .withContentLength()
           .build();
 

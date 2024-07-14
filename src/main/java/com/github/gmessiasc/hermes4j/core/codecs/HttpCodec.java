@@ -158,6 +158,8 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
     }
 
     final var body = sb.toString();
+
+    logger.info(" \n \n \n BODY ===== " + body + "\n \n \n ");
     return Optional.of(body);
   }
 }

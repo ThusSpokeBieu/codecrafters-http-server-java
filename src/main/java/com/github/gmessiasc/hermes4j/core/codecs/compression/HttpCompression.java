@@ -26,7 +26,7 @@ public abstract sealed class HttpCompression permits GzipCodec {
       case "gzip" -> GzipCodec.INSTANCE;
       default -> null;
     };
-  })
+  }
 
   public static HttpCompression get(final String compressionString) {
     var compression = getCompressCodec(compressionString);

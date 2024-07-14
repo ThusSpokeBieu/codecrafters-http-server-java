@@ -92,7 +92,13 @@ public class HttpResponseBuilder implements HttpResponse.Builder {
 
   @Override
   public HttpResponse.Builder withContentLength() {
-    var length = String.valueOf(bodyByte.orElseGet(() -> new byte[0]).length);
+    var length = String.valueOf(body.orElseGet(() -> "").length());
+    addHeader(StrUtils.CONTENT_LENGTH, length);
+    return this;
+  }
+
+  @Override
+  public HttpResponse.Builder withContentLength(final String length) {
     addHeader(StrUtils.CONTENT_LENGTH, length);
     return this;
   }

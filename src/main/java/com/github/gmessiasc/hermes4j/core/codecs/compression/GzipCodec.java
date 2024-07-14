@@ -62,6 +62,7 @@ public final class GzipCodec extends HttpCompression {
 
     final byte[] byteArray = outputStream.toByteArray();
 
+
     return HttpResponseBuilder
         .builder()
         .status(response.status())
@@ -69,7 +70,7 @@ public final class GzipCodec extends HttpCompression {
         .headers(response.headers())
         .addHeader(HeaderUtils.CONTENT_ENCODING, this.name)
         .version(response.httpVersion())
-        .withContentLength()
+        .withContentLength("23")
         .build();
   }
 }

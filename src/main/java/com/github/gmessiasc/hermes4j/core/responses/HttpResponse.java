@@ -4,7 +4,6 @@ import com.github.gmessiasc.hermes4j.core.headers.HttpHeader;
 import com.github.gmessiasc.hermes4j.core.headers.HttpStatus;
 import com.github.gmessiasc.hermes4j.core.headers.HttpVersion;
 import com.github.gmessiasc.hermes4j.core.headers.mime.MimeTypes;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -16,6 +15,7 @@ public record HttpResponse(
     Optional<String> body,
     Optional<byte[]> bodyByte
 ) {
+
   public interface Builder {
     HttpResponse.Builder version(final HttpVersion version);
     HttpResponse.Builder status(final HttpStatus status);
@@ -27,6 +27,7 @@ public record HttpResponse(
     HttpResponse.Builder body(final byte[] body);
     HttpResponse.Builder withContentType(final MimeTypes... type);
     HttpResponse.Builder withContentLength();
+    HttpResponse.Builder withContentLength(final String length);
     HttpResponse build();
   }
 }

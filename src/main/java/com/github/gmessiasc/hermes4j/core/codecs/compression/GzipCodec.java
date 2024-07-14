@@ -17,6 +17,7 @@ import java.util.zip.GZIPOutputStream;
 
 public final class GzipCodec extends HttpCompression {
   private static final Logger logger = Logger.getLogger(GzipCodec.class.getName());
+  private static final HexFormat HEX_FORMAT = HexFormat.of().withDelimiter(" ").withUpperCase();
 
   public static GzipCodec INSTANCE = new GzipCodec();
   private static Base64.Decoder DECODER = Base64.getDecoder();
@@ -54,16 +55,17 @@ public final class GzipCodec extends HttpCompression {
     final byte[] inputBytes = response.bodyByte().orElse(new byte[0]);
 
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
 
-    gzipOutputStream.write(inputBytes);
+    try (GZIPOutputStream gzipOs = new GZIPOutputStream(outputStream)) {
+      gzipOs.write(inputBytes);
+    }
 
-    final var hex = HexFormat.of().formatHex(outputStream.toByteArray());
+    final byte[] byteArray = outputStream.toByteArray();
 
     return HttpResponseBuilder
         .builder()
         .status(response.status())
-        .body(hex)
+        .body(HEX_FORMAT.formatHex(byteArray))
         .headers(response.headers())
         .addHeader(HeaderUtils.CONTENT_ENCODING, this.name)
         .version(response.httpVersion())

@@ -32,18 +32,13 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
       final HttpPath path = HttpPathBuilder.with(firstLine[1]);
 
       final var headers = readHeader(reader);
-      final int contentLength = headers
-          .getOrDefault("Content-Length", Set.of("0"))
-          .stream()
-          .mapToInt(Integer::valueOf)
-          .sum();
 
       final Optional<String> body;
 
-      if(method.equals(HttpMethod.GET) || contentLength == 0) {
+      if(method.equals(HttpMethod.GET)) {
         body = Optional.empty();
       } else {
-        body = readBody(reader, contentLength);
+        body = readBody(reader);
       }
 
       var request = HttpRequestBuilder
@@ -149,17 +144,18 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
     return headers;
   }
 
-  private Optional<String> readBody(final BufferedReader reader, final int length) throws Exception {
+  private Optional<String> readBody(final BufferedReader reader) throws Exception {
     final StringBuilder sb = new StringBuilder();
-    char[] buffer = new char[length];
 
-    if (reader.read(buffer, 0, length) == -1) {
-      throw new IOException("Body is with invalid length");
+    int intValueOfChar;
+
+    while ((intValueOfChar = reader.read()) != -1) {
+      sb.append((char) intValueOfChar);
     }
 
-    sb.append(buffer);
-
-    if(sb.isEmpty()) return Optional.empty();
+    if (sb.isEmpty()) {
+      return Optional.empty();
+    }
 
     final var body = sb.toString();
     return Optional.of(body);

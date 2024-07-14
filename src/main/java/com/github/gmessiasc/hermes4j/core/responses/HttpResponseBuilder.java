@@ -10,12 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class HttpResponseBuilder implements HttpResponse.Builder {
 
   HttpVersion httpVersion = HttpVersion.HTTP_1_1;
   HttpStatus httpStatus = HttpStatus.OK;
-  Map<String, Set<String>> httpHeaders = new HashMap<>();
+  Map<String, Set<String>> httpHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
   Optional<String> body = Optional.empty();
   Optional<byte[]> bodyByte = Optional.empty();
 

@@ -7,3 +7,4 @@ public interface Codec<I, O> {
   I decode(final Socket socket);
   void encode(final Socket socket, final O response) throws IOException;
 }
+

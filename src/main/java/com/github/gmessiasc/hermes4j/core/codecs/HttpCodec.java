@@ -125,7 +125,6 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
     String line = reader.readLine();
 
     while(line != null) {
-
       if(line.isEmpty()) break;
       final var optionalHeader = HttpHeader.with(line);
 

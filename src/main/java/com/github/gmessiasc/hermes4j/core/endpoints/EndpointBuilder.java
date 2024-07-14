@@ -24,6 +24,7 @@ public class EndpointBuilder implements HttpEndpoint.Builder {
   Map<String, Set<String>> httpHeaders = new HashMap<>();
   HttpHandler handler = null;
   Codec codec = Codecs.HTTP_CODEC;
+  boolean acceptsCompression = true;
 
   public static EndpointBuilder builder() {
     return new EndpointBuilder();
@@ -105,6 +106,12 @@ public class EndpointBuilder implements HttpEndpoint.Builder {
   }
 
   @Override
+  public HttpEndpoint.Builder acceptsCompression(final Boolean acceptsCompression) {
+    this.acceptsCompression = acceptsCompression;
+    return this;
+  }
+
+  @Override
   public HttpEndpoint build() throws IOException {
     if(codec == null) throw new IOException("HttpEndpoint's codec must be initialized");
     if(handler == null) throw new IOException("HttpEndpoint's handle must be initialized");
@@ -114,6 +121,7 @@ public class EndpointBuilder implements HttpEndpoint.Builder {
         Collections.unmodifiableSet(httpMethods),
         Collections.unmodifiableMap(httpHeaders),
         handler,
+        acceptsCompression,
         codec
     );
   }

@@ -15,6 +15,7 @@ public record HttpEndpoint<I, O>(
     Set<HttpMethod> methods,
     Map<String, Set<String>> headers,
     HttpHandler handler,
+    boolean acceptsCompression,
     Codec codec
 ) {
   public interface Builder {
@@ -28,6 +29,7 @@ public record HttpEndpoint<I, O>(
     Builder accept(final MimeTypes... mimeTypes);
     Builder handler(final HttpHandler aHandler);
     Builder codec(final Codec codec);
+    Builder acceptsCompression(final Boolean acceptsCompression);
     HttpEndpoint build() throws IOException;
   }
 

@@ -1,8 +1,6 @@
 package com.github.gmessiasc.hermes4j.core.server;
 
 import com.github.gmessiasc.hermes4j.core.endpoints.HttpEndpoint;
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;

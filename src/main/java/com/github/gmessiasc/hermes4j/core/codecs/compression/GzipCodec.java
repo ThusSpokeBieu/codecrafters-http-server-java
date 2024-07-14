@@ -1,21 +1,22 @@
 package com.github.gmessiasc.hermes4j.core.codecs.compression;
 
-import com.github.gmessiasc.hermes4j.core.headers.HttpHeader;
 import com.github.gmessiasc.hermes4j.core.requests.HttpRequest;
 import com.github.gmessiasc.hermes4j.core.responses.HttpResponse;
 import com.github.gmessiasc.hermes4j.core.responses.HttpResponseBuilder;
 import com.github.gmessiasc.hermes4j.utils.HeaderUtils;
-import com.github.gmessiasc.hermes4j.utils.HttpUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Base64;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public final class GzipCodec extends HttpCompression {
+  private static final Logger logger = Logger.getLogger(GzipCodec.class.getName());
+
   public static GzipCodec INSTANCE = new GzipCodec();
   private static Base64.Decoder DECODER = Base64.getDecoder();
 
@@ -34,10 +35,15 @@ public final class GzipCodec extends HttpCompression {
     final GZIPInputStream gzipStream = new GZIPInputStream(inputStream);
     final OutputStream baos = new ByteArrayOutputStream();
 
+    logger.info("GZIPInputStream = " + gzipStream.toString());
+
     baos.write(gzipStream.readAllBytes());
+    logger.info("BAO = " + baos);
 
     final StringBuilder sb = new StringBuilder();
     sb.append(baos);
+
+    logger.info("SB = " + sb);
 
     return httpRequest.withBody(sb.toString());
   }

@@ -4,6 +4,7 @@ import com.github.gmessiasc.hermes4j.core.codecs.compression.exceptions.WrongCom
 import com.github.gmessiasc.hermes4j.core.requests.HttpRequest;
 import com.github.gmessiasc.hermes4j.core.responses.HttpResponse;
 import com.github.gmessiasc.hermes4j.utils.HeaderUtils;
+import com.github.gmessiasc.hermes4j.utils.ObjectUtils;
 import java.io.IOException;
 
 public abstract sealed class HttpCompression permits GzipCodec {
@@ -20,11 +21,17 @@ public abstract sealed class HttpCompression permits GzipCodec {
     return name;
   }
 
-  public static HttpCompression get(final String compressionString) {
+  private static HttpCompression getCompressCodec(final String compressionString) {
     return switch(compressionString.toLowerCase()) {
       case "gzip" -> GzipCodec.INSTANCE;
-      default -> throw WrongCompressionException.err();
+      default -> null;
     };
+  })
+
+  public static HttpCompression get(final String compressionString) {
+    var compression = getCompressCodec(compressionString);
+    ObjectUtils.checkNull(compression, WrongCompressionException.err());
+    return compression;
   }
 
   public static HttpCompression get(final HttpRequest request) {
@@ -39,14 +46,20 @@ public abstract sealed class HttpCompression permits GzipCodec {
   }
 
   public static HttpCompression getAccepted(final HttpRequest request) {
-    final var compressType = request
-        .httpHeaders()
-        .get(HeaderUtils.ACCEPT_ENCODING)
-        .stream()
-        .findAny()
-        .get();
+    HttpCompression compression = null;
 
-    return get(compressType);
+    final var compressTypes = request
+        .httpHeaders()
+        .get(HeaderUtils.ACCEPT_ENCODING);
+
+    for (final String compressType : compressTypes) {
+      compression = getCompressCodec(compressType);
+
+      if(compression != null) break;
+    }
+
+    ObjectUtils.checkNull(compression, WrongCompressionException.err());
+    return compression;
   }
 
 }

@@ -36,7 +36,10 @@ public final class GzipCodec extends HttpCompression {
 
     baos.write(gzipStream.readAllBytes());
 
-    return httpRequest.withBody(baos.toString());
+    final StringBuilder sb = new StringBuilder();
+    sb.append(baos);
+
+    return httpRequest.withBody(sb.toString());
   }
 
   @Override

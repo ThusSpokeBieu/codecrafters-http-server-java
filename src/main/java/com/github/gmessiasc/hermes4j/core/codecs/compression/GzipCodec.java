@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Base64;
+import java.util.HexFormat;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -35,7 +36,7 @@ public final class GzipCodec extends HttpCompression {
     final GZIPInputStream gzipStream = new GZIPInputStream(inputStream);
     final OutputStream baos = new ByteArrayOutputStream();
 
-    logger.info("GZIPInputStream = " + gzipStream.toString());
+    logger.info("GZIPInputStream = " + gzipStream);
 
     baos.write(gzipStream.readAllBytes());
     logger.info("BAO = " + baos);
@@ -52,14 +53,17 @@ public final class GzipCodec extends HttpCompression {
   public HttpResponse encode(final HttpResponse response) throws IOException{
     final byte[] inputBytes = response.bodyByte().orElse(new byte[0]);
 
-    final OutputStream outputStream = new ByteArrayOutputStream();
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+
     gzipOutputStream.write(inputBytes);
+
+    final var hex = HexFormat.of().formatHex(outputStream.toByteArray());
 
     return HttpResponseBuilder
         .builder()
         .status(response.status())
-        .body(gzipOutputStream.toString())
+        .body(hex)
         .headers(response.headers())
         .addHeader(HeaderUtils.CONTENT_ENCODING, this.name)
         .version(response.httpVersion())

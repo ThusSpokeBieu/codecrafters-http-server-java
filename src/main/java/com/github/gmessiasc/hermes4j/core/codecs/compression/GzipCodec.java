@@ -18,10 +18,8 @@ import java.util.zip.GZIPOutputStream;
 
 public final class GzipCodec extends HttpCompression {
   private static final Logger logger = Logger.getLogger(GzipCodec.class.getName());
-  private static final HexFormat HEX_FORMAT = HexFormat.of().withDelimiter(" ");
 
   public static GzipCodec INSTANCE = new GzipCodec();
-  private static Base64.Decoder DECODER = Base64.getDecoder();
 
   public GzipCodec() {
     super("gzip");
@@ -33,20 +31,14 @@ public final class GzipCodec extends HttpCompression {
 
     if (body.isEmpty()) return httpRequest;
 
-    final byte[] compressedBytes = DECODER.decode(body.get());
-    final InputStream inputStream = new ByteArrayInputStream(compressedBytes);
+    final InputStream inputStream = new ByteArrayInputStream(httpRequest.body().get().getBytes());
     final GZIPInputStream gzipStream = new GZIPInputStream(inputStream);
     final OutputStream baos = new ByteArrayOutputStream();
 
-    logger.info("GZIPInputStream = " + gzipStream);
-
     baos.write(gzipStream.readAllBytes());
-    logger.info("BAO = " + baos);
 
     final StringBuilder sb = new StringBuilder();
     sb.append(baos);
-
-    logger.info("SB = " + sb);
 
     return httpRequest.withBody(sb.toString());
   }
@@ -66,11 +58,11 @@ public final class GzipCodec extends HttpCompression {
     return HttpResponseBuilder
         .builder()
         .status(response.status())
-        .body(outputStream.toString())
+        .body(outputStream.toByteArray())
         .headers(response.headers())
-        .addHeader(HeaderUtils.CONTENT_ENCODING, this.name)
         .version(response.httpVersion())
         .withContentLength()
+        .addHeader(HeaderUtils.CONTENT_ENCODING, this.name)
         .build();
   }
 }

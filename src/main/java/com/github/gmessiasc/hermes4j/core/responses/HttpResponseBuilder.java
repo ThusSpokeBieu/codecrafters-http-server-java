@@ -17,8 +17,8 @@ public class HttpResponseBuilder implements HttpResponse.Builder {
   HttpVersion httpVersion = HttpVersion.HTTP_1_1;
   HttpStatus httpStatus = HttpStatus.OK;
   Map<String, Set<String>> httpHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-  Optional<String> body = Optional.empty();
-  Optional<byte[]> bodyByte = Optional.empty();
+  Optional<String> bodyStr = Optional.empty();
+  Optional<byte[]> body = Optional.empty();
 
 
   public static HttpResponseBuilder builder() {
@@ -69,15 +69,14 @@ public class HttpResponseBuilder implements HttpResponse.Builder {
 
   @Override
   public HttpResponse.Builder body(final String bodyAsString) {
-    this.body = Optional.of(bodyAsString);
-    this.bodyByte = Optional.of(bodyAsString.getBytes());
+    this.bodyStr = Optional.of(bodyAsString);
+    this.body = Optional.of(bodyAsString.getBytes());
     return this;
   }
 
   @Override
   public HttpResponse.Builder body(final byte[] bodyAsByte) {
-    this.body = Optional.of(new String(bodyAsByte));
-    this.bodyByte = Optional.of(bodyAsByte);
+    this.body = Optional.of(bodyAsByte);
     return this;
   }
 
@@ -92,14 +91,11 @@ public class HttpResponseBuilder implements HttpResponse.Builder {
 
   @Override
   public HttpResponse.Builder withContentLength() {
-    var length = String.valueOf(body.orElseGet(() -> "").length());
-    addHeader(StrUtils.CONTENT_LENGTH, length);
-    return this;
-  }
+    body.ifPresent(bytes -> addHeader(
+        StrUtils.CONTENT_LENGTH,
+        String.valueOf(bytes.length)
+    ));
 
-  @Override
-  public HttpResponse.Builder withContentLength(final String length) {
-    addHeader(StrUtils.CONTENT_LENGTH, length);
     return this;
   }
 
@@ -109,8 +105,7 @@ public class HttpResponseBuilder implements HttpResponse.Builder {
         httpVersion,
         httpStatus,
         httpHeaders,
-        body,
-        bodyByte
+        body
     );
   }
 }

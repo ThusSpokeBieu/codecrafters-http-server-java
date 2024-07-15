@@ -45,7 +45,9 @@ public final class GzipCodec extends HttpCompression {
 
   @Override
   public HttpResponse encode(final HttpResponse response) throws IOException{
-    final byte[] inputBytes = response.body().orElse("").getBytes(StandardCharsets.UTF_8);
+    if(response.body().isEmpty()) return response;
+
+    final byte[] inputBytes = response.body().get();
 
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     final GZIPOutputStream gzipOs = new GZIPOutputStream(outputStream);
@@ -56,7 +58,7 @@ public final class GzipCodec extends HttpCompression {
     return HttpResponseBuilder
         .builder()
         .status(response.status())
-        .body(outputStream.toString())
+        .body(outputStream.toByteArray())
         .headers(response.headers())
         .version(response.httpVersion())
         .withContentLength()

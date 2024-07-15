@@ -12,8 +12,7 @@ public record HttpResponse(
     HttpVersion httpVersion,
     HttpStatus status,
     Map<String, Set<String>> headers,
-    Optional<String> body,
-    Optional<byte[]> bodyByte
+    Optional<byte[]> body
 ) {
 
   public interface Builder {
@@ -27,7 +26,6 @@ public record HttpResponse(
     HttpResponse.Builder body(final byte[] body);
     HttpResponse.Builder withContentType(final MimeTypes... type);
     HttpResponse.Builder withContentLength();
-    HttpResponse.Builder withContentLength(final String length);
     HttpResponse build();
   }
 }

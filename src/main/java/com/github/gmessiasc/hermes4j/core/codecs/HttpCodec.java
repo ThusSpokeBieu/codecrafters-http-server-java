@@ -7,9 +7,14 @@ import com.github.gmessiasc.hermes4j.core.paths.HttpPathBuilder;
 import com.github.gmessiasc.hermes4j.core.requests.HttpRequest;
 import com.github.gmessiasc.hermes4j.core.requests.HttpRequestBuilder;
 import com.github.gmessiasc.hermes4j.core.responses.HttpResponse;
+import com.github.gmessiasc.hermes4j.utils.StrUtils;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +69,55 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
   @Override
   public void encode(final Socket socket, final HttpResponse response) throws IOException {
     try {
+      final var outputStream = socket.getOutputStream();
+//      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      final var httpVersion = response.httpVersion();
+      final var status = response.status();
+
+      outputStream.write(httpVersion.getVersion().getBytes());
+      outputStream.write(StrUtils.SPACE);
+      outputStream.write(status.getStatusMessageBytes());
+      outputStream.write(StrUtils.CRLF_BYTE);
+
+      for(final Map.Entry<String, Set<String>> entry : response.headers().entrySet()) {
+        final var key = entry.getKey();
+        final var values = entry.getValue();
+        outputStream.write(key.getBytes());
+        outputStream.write(StrUtils.COLON);
+        outputStream.write(StrUtils.SPACE);
+
+        int counter = 1;
+
+        for(final String value : values) {
+          outputStream.write(value.getBytes());
+          if(counter < values.size()) {
+            outputStream.write(StrUtils.COMMA);
+            outputStream.write(StrUtils.SPACE);
+            counter++;
+          }
+        }
+
+        outputStream.write(StrUtils.CRLF_BYTE);
+      }
+
+      if(response.body().isPresent()) {
+        outputStream.write(StrUtils.CRLF_BYTE);
+        outputStream.write(response.body().get());
+      }
+
+      /*logger.info("Sending: " + outputStream);
+
+      socketOutputStream.write(outputStream.toByteArray());*/
+
+    } catch(IOException ex) {
+      throw new IOException(ex);
+    }
+  }
+
+/*
+  @Override
+  public void encode(final Socket socket, final HttpResponse response) throws IOException {
+    try {
       final var bytes = encode(response);
       final var output = socket.getOutputStream();
       output.write(bytes);
@@ -72,7 +126,7 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
     }
   }
 
-  private byte[] encode(final HttpResponse response) {
+  private byte[] encode(final HttpResponse response, final OutputStream o) {
     final var sb = new StringBuilder();
     final var httpVersion = response.httpVersion();
     final var status = response.status();
@@ -107,7 +161,7 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
     final String str = sb.toString();
     logger.info("Returned: " + str);
     return str.getBytes();
-  }
+  }*/
 
   private String[] readFirstLine(final BufferedReader reader) throws IOException {
     final String firstLine = reader.readLine();

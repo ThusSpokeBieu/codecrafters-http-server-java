@@ -11,8 +11,12 @@ public enum HttpStatus {
   NOT_FOUND(404, "Not Found");
 
   private final int status;
+  private final byte[] statusBytes;
+  private final String statusString;
   private final String message;
   private final String statusMessage;
+  private final byte[] statusMessageBytes;
+
 
   private static final HashMap<Integer, HttpStatus> statusByCode = new HashMap<>(){};
   private static final HashMap<String, HttpStatus> statusByMessage = new HashMap<>(){};
@@ -27,7 +31,10 @@ public enum HttpStatus {
   HttpStatus(final int status, final String message) {
     this.status = status;
     this.message = message;
+    this.statusString = String.valueOf(status);
+    this.statusBytes = this.statusString.getBytes();
     this.statusMessage = String.format("%d %s", status, message);
+    this.statusMessageBytes = statusMessage.getBytes();
   }
 
   public int getStatus() {
@@ -40,6 +47,18 @@ public enum HttpStatus {
 
   public String getStatusMessage() {
     return statusMessage;
+  }
+
+  public byte[] getStatusBytes() {
+    return statusBytes;
+  }
+
+  public String getStatusString() {
+    return statusString;
+  }
+
+  public byte[] getStatusMessageBytes() {
+    return statusMessageBytes;
   }
 
   public static HttpStatus get(final int code) {

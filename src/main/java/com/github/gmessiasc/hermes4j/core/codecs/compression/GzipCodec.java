@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.logging.Logger;
@@ -52,7 +53,7 @@ public final class GzipCodec extends HttpCompression {
 
   @Override
   public HttpResponse encode(final HttpResponse response) throws IOException{
-    final byte[] inputBytes = response.bodyByte().orElse(new byte[0]);
+    final byte[] inputBytes = response.body().orElse("").getBytes(StandardCharsets.UTF_8);
 
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 

@@ -9,16 +9,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HexFormat;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public final class GzipCodec extends HttpCompression {
-  private static final Logger logger = Logger.getLogger(GzipCodec.class.getName());
-
   public static GzipCodec INSTANCE = new GzipCodec();
 
   public GzipCodec() {

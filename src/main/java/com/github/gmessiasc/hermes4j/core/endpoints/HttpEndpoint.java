@@ -2,7 +2,6 @@ package com.github.gmessiasc.hermes4j.core.endpoints;
 
 import com.github.gmessiasc.hermes4j.core.codecs.Codec;
 import com.github.gmessiasc.hermes4j.core.handlers.HttpHandler;
-import com.github.gmessiasc.hermes4j.core.headers.HttpHeader;
 import com.github.gmessiasc.hermes4j.core.headers.mime.MimeTypes;
 import com.github.gmessiasc.hermes4j.core.methods.HttpMethod;
 import com.github.gmessiasc.hermes4j.core.paths.PathTemplate;

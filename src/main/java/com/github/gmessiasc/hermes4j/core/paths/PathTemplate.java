@@ -1,9 +1,7 @@
 package com.github.gmessiasc.hermes4j.core.paths;
 
-import com.github.gmessiasc.hermes4j.core.endpoints.HttpEndpoint;
 import com.github.gmessiasc.hermes4j.core.requests.HttpRequest;
 import com.github.gmessiasc.hermes4j.utils.StrUtils;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;

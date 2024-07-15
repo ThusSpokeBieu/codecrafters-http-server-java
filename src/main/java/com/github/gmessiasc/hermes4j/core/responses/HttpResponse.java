@@ -1,6 +1,5 @@
 package com.github.gmessiasc.hermes4j.core.responses;
 
-import com.github.gmessiasc.hermes4j.core.headers.HttpHeader;
 import com.github.gmessiasc.hermes4j.core.headers.HttpStatus;
 import com.github.gmessiasc.hermes4j.core.headers.HttpVersion;
 import com.github.gmessiasc.hermes4j.core.headers.mime.MimeTypes;

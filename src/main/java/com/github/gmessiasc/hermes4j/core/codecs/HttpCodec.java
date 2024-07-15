@@ -13,15 +13,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 
 public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
-  private static final Logger logger = Logger.getLogger(HttpCodec.class.getName());
 
   @Override
   public HttpRequest decode(final InputStream inputStream) {

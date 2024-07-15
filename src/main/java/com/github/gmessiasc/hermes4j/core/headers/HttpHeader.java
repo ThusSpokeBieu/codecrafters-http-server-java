@@ -4,11 +4,8 @@ import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 
 public class HttpHeader {
-  private static Logger logger = Logger.getLogger(HttpHeader.class.getName());
-
   public static Optional<Map.Entry<String, Set<String>>> with(String key, String... values) {
     try {
       final var header = new AbstractMap.SimpleEntry<>(

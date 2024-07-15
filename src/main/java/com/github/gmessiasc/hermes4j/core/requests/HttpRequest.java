@@ -1,6 +1,5 @@
 package com.github.gmessiasc.hermes4j.core.requests;
 
-import com.github.gmessiasc.hermes4j.core.headers.HttpHeader;
 import com.github.gmessiasc.hermes4j.core.headers.HttpVersion;
 import com.github.gmessiasc.hermes4j.core.methods.HttpMethod;
 import com.github.gmessiasc.hermes4j.core.paths.HttpPath;

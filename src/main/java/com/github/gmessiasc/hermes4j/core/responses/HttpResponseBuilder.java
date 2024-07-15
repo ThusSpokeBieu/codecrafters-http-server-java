@@ -6,7 +6,6 @@ import com.github.gmessiasc.hermes4j.core.headers.HttpVersion;
 import com.github.gmessiasc.hermes4j.core.headers.exceptions.WrongHeaderException;
 import com.github.gmessiasc.hermes4j.core.headers.mime.MimeTypes;
 import com.github.gmessiasc.hermes4j.utils.StrUtils;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;

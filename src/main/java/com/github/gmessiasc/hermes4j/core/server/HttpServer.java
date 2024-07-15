@@ -1,10 +1,8 @@
 package com.github.gmessiasc.hermes4j.core.server;
 
-import com.github.gmessiasc.hermes4j.core.codecs.Codec;
 import com.github.gmessiasc.hermes4j.core.codecs.Codecs;
 import com.github.gmessiasc.hermes4j.core.endpoints.HttpEndpoint;
 import com.github.gmessiasc.hermes4j.core.handlers.HttpCompressionHandler;
-import com.github.gmessiasc.hermes4j.core.paths.PathTemplate;
 import com.github.gmessiasc.hermes4j.core.requests.HttpRequest;
 import com.github.gmessiasc.hermes4j.core.responses.HttpResponse;
 import com.github.gmessiasc.hermes4j.core.responses.Responses;
@@ -13,41 +11,21 @@ import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
-public class HttpServer implements AutoCloseable {
-  private static final Logger logger = Logger.getLogger(HttpServer.class.getName());
+public class HttpServer extends AbstractServlet {
 
-  private final int port;
-  private final Set<HttpEndpoint> endpoints;
   private final ExecutorService executor;
 
   private ServerSocket serverSocket;
-  private boolean isRunning = false;
 
   public HttpServer(
       final int port,
       final Set<HttpEndpoint> endpoints,
       final ExecutorService executor) {
-    this.port = port;
-    this.endpoints = Collections.unmodifiableSet(endpoints);
+    super(port, endpoints);
     this.executor = executor;
-  }
-
-  public int getPort() {
-    return port;
-  }
-
-  public boolean isRunning() {
-    return isRunning;
-  }
-
-  public Set<HttpEndpoint> getEndpoints() {
-    return endpoints;
   }
 
   public ExecutorService getExecutor() {
@@ -59,7 +37,7 @@ public class HttpServer implements AutoCloseable {
   }
 
   public void handleSocket(final Socket socket) throws IOException {
-    final HttpRequest request = Codecs.HTTP_CODEC.decode(socket);
+    final HttpRequest request = Codecs.HTTP_CODEC.decode(socket.getInputStream());
 
     final var optionalEndpoint = endpoints.stream()
         .filter(e -> e.path().verify(request))
@@ -67,7 +45,7 @@ public class HttpServer implements AutoCloseable {
         .findAny();
 
     if (optionalEndpoint.isEmpty()) {
-      Codecs.HTTP_CODEC.encode(socket, Responses.NOT_FOUND);
+      Codecs.HTTP_CODEC.encode(socket.getOutputStream(), Responses.NOT_FOUND);
       return;
     }
 
@@ -90,7 +68,8 @@ public class HttpServer implements AutoCloseable {
       response = HttpCompressionHandler.compress(response, request);
     }
 
-    endpoint.codec().encode(socket, response);
+    endpoint.codec().encode(socket.getOutputStream(), response);
+    socket.close();
   }
 
   public void start() throws IOException {

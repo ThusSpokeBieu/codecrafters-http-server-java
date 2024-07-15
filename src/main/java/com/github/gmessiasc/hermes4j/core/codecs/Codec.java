@@ -1,10 +1,11 @@
 package com.github.gmessiasc.hermes4j.core.codecs;
 
 import java.io.IOException;
-import java.net.Socket;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public interface Codec<I, O> {
-  I decode(final Socket socket);
-  void encode(final Socket socket, final O response) throws IOException;
+  I decode(final InputStream inputStream);
+  void encode(final OutputStream outputStream, final O response) throws IOException;
 }
 

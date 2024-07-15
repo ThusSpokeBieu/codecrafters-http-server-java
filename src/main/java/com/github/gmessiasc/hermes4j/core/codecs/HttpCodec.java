@@ -10,7 +10,9 @@ import com.github.gmessiasc.hermes4j.core.responses.HttpResponse;
 import com.github.gmessiasc.hermes4j.utils.StrUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +24,8 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
   private static final Logger logger = Logger.getLogger(HttpCodec.class.getName());
 
   @Override
-  public HttpRequest decode(final Socket socket) {
+  public HttpRequest decode(final InputStream inputStream) {
     try {
-      final var inputStream = socket.getInputStream();
       final var reader = new BufferedReader(new InputStreamReader(inputStream));
 
       final String[] firstLine = readFirstLine(reader);
@@ -61,9 +62,8 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
   }
 
   @Override
-  public void encode(final Socket socket, final HttpResponse response) throws IOException {
+  public void encode(final OutputStream outputStream, final HttpResponse response) throws IOException {
     try {
-      final var outputStream = socket.getOutputStream();
       final var httpVersion = response.httpVersion();
       final var status = response.status();
 

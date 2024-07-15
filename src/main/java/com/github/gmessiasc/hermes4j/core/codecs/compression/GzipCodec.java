@@ -65,10 +65,11 @@ public final class GzipCodec extends HttpCompression {
     return HttpResponseBuilder
         .builder()
         .status(response.status())
-        .body(HEX_FORMAT.formatHex(byteArray))
+        .body(outputStream.toString())
         .headers(response.headers())
         .addHeader(HeaderUtils.CONTENT_ENCODING, this.name)
         .version(response.httpVersion())
+        .withContentLength()
         .build();
   }
 }

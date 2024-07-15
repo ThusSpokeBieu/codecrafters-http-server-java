@@ -31,7 +31,7 @@ public final class GzipCodec extends HttpCompression {
 
     if (body.isEmpty()) return httpRequest;
 
-    final InputStream inputStream = new ByteArrayInputStream(httpRequest.body().get().getBytes());
+    final InputStream inputStream = new ByteArrayInputStream(httpRequest.body().get());
     final GZIPInputStream gzipStream = new GZIPInputStream(inputStream);
     final OutputStream baos = new ByteArrayOutputStream();
 

@@ -17,7 +17,7 @@ public class HttpRequestBuilder implements HttpRequest.Builder {
   HttpMethod httpMethod = HttpMethod.GET;
   Map<String, Set<String>> httpHeader = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
   PathParams pathParams = new PathParams();
-  Optional<String> body = Optional.empty();
+  Optional<byte[]> body = Optional.empty();
 
   public static HttpRequestBuilder builder() {
     return new HttpRequestBuilder();
@@ -54,8 +54,20 @@ public class HttpRequestBuilder implements HttpRequest.Builder {
   }
 
   @Override
-  public HttpRequest.Builder body(final Optional<String> body) {
+  public HttpRequest.Builder body(final String body) {
+    this.body = Optional.of(body.getBytes());
+    return this;
+  }
+
+  @Override
+  public HttpRequest.Builder body(final Optional<byte[]> body) {
     this.body = body;
+    return this;
+  }
+
+  @Override
+  public HttpRequest.Builder body(final byte[] body) {
+    this.body = Optional.of(body);
     return this;
   }
 

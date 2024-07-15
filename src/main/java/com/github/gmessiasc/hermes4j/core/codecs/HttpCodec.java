@@ -9,11 +9,13 @@ import com.github.gmessiasc.hermes4j.core.requests.HttpRequestBuilder;
 import com.github.gmessiasc.hermes4j.core.responses.HttpResponse;
 import com.github.gmessiasc.hermes4j.utils.StrUtils;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.net.Socket;
 import java.util.HashMap;
@@ -37,28 +39,26 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
       final HttpPath path = HttpPathBuilder.with(firstLine[1]);
 
       final var headers = readHeader(reader);
+      final int contentLength = headers
+          .getOrDefault("Content-Length", Set.of("0"))
+          .stream()
+          .mapToInt(Integer::valueOf)
+          .sum();
 
-      final Optional<String> body;
 
-      if(method.equals(HttpMethod.GET)) {
-        body = Optional.empty();
-      } else {
-        body = readBody(reader);
-      }
-
-      var request = HttpRequestBuilder
+      var requestBuilder = HttpRequestBuilder
           .builder()
           .path(path)
           .method(method)
-          .header(headers)
-          .body(body)
-          .build();
+          .header(headers);
 
-      logger.info("Received: " + request);
+      if(!method.equals(HttpMethod.GET) || contentLength == 0) {
+        requestBuilder.body(readBody(reader, contentLength));
+      }
 
-      return request;
-
+      return requestBuilder.build();
     } catch (IOException exception) {
+      exception.printStackTrace();
       throw new RuntimeException(exception);
     } catch (Exception e) {
       e.printStackTrace();
@@ -70,7 +70,6 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
   public void encode(final Socket socket, final HttpResponse response) throws IOException {
     try {
       final var outputStream = socket.getOutputStream();
-//      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
       final var httpVersion = response.httpVersion();
       final var status = response.status();
 
@@ -105,63 +104,10 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
         outputStream.write(response.body().get());
       }
 
-      /*logger.info("Sending: " + outputStream);
-
-      socketOutputStream.write(outputStream.toByteArray());*/
-
     } catch(IOException ex) {
       throw new IOException(ex);
     }
   }
-
-/*
-  @Override
-  public void encode(final Socket socket, final HttpResponse response) throws IOException {
-    try {
-      final var bytes = encode(response);
-      final var output = socket.getOutputStream();
-      output.write(bytes);
-    } catch(IOException ex) {
-      throw ex;
-    }
-  }
-
-  private byte[] encode(final HttpResponse response, final OutputStream o) {
-    final var sb = new StringBuilder();
-    final var httpVersion = response.httpVersion();
-    final var status = response.status();
-
-    sb.append(httpVersion.getVersion());
-    sb.append(" ");
-    sb.append(status.getStatusMessage());
-    sb.append("\r\n");
-
-    response.headers().forEach(
-        (key, values) -> {
-          sb.append(key);
-          sb.append(": ");
-
-          int counter = 1;
-          for (final String value : values) {
-            sb.append(value);
-            if (counter < values.size()) {
-              sb.append(", ");
-              counter++;
-            }
-        }
-        sb.append("\r\n");
-    });
-
-    sb.append("\r\n");
-
-    if(response.body().isPresent()) {
-      sb.append(response.body().get());
-    }
-
-    final String str = sb.toString();
-    logger.info("Returned: " + str);
-    return str.getBytes();
-  }*/
 
   private String[] readFirstLine(final BufferedReader reader) throws IOException {
     final String firstLine = reader.readLine();
@@ -198,22 +144,19 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
     return headers;
   }
 
-  private Optional<String> readBody(final BufferedReader reader) throws Exception {
+  private Optional<byte[]> readBody(final BufferedReader reader, final int length) throws Exception {
     final StringBuilder sb = new StringBuilder();
+    char[] buffer = new char[length];
 
-    int intValueOfChar;
-
-    while ((intValueOfChar = reader.read()) != -1) {
-      sb.append((char) intValueOfChar);
+    if (reader.read(buffer, 0, length) == -1) {
+      throw new IOException("Body is with invalid length");
     }
 
-    if (sb.isEmpty()) {
-      return Optional.empty();
-    }
+    sb.append(buffer);
+
+    if(sb.isEmpty()) return Optional.empty();
 
     final var body = sb.toString();
-
-    logger.info(" \n \n \n BODY ===== " + body + "\n \n \n ");
-    return Optional.of(body);
+    return Optional.of(body.getBytes());
   }
 }

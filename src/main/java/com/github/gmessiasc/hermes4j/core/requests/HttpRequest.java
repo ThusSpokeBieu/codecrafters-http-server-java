@@ -17,7 +17,7 @@ public record HttpRequest (
     Map<String, Set<String>> httpHeaders,
     boolean isCompressed,
     boolean hasAcceptedContent,
-    Optional<String> body
+    Optional<byte[]> body
     ) {
 
   public HttpRequest withBody(final String body) {
@@ -29,7 +29,7 @@ public record HttpRequest (
         httpHeaders,
         isCompressed,
         hasAcceptedContent,
-        Optional.ofNullable(body)
+        Optional.of(body.getBytes())
     );
   }
 
@@ -39,7 +39,9 @@ public record HttpRequest (
     Builder method(final HttpMethod method);
     Builder pathParams(final PathParams pathParams);
     Builder header(final Map<String, Set<String>> header);
-    Builder body(final Optional<String> body);
+    Builder body(final String body);
+    Builder body(final Optional<byte[]> body);
+    Builder body(final byte[] body);
     HttpRequest build();
   }
 

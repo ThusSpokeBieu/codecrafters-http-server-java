@@ -17,7 +17,7 @@ import java.util.zip.GZIPOutputStream;
 
 public final class GzipCodec extends HttpCompression {
   private static final Logger logger = Logger.getLogger(GzipCodec.class.getName());
-  private static final HexFormat HEX_FORMAT = HexFormat.of().withDelimiter(" ").withUpperCase();
+  private static final HexFormat HEX_FORMAT = HexFormat.of().withDelimiter(" ");
 
   public static GzipCodec INSTANCE = new GzipCodec();
   private static Base64.Decoder DECODER = Base64.getDecoder();

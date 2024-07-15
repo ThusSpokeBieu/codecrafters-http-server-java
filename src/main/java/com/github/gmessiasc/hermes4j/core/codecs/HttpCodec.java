@@ -9,14 +9,8 @@ import com.github.gmessiasc.hermes4j.core.requests.HttpRequestBuilder;
 import com.github.gmessiasc.hermes4j.core.responses.HttpResponse;
 import com.github.gmessiasc.hermes4j.utils.StrUtils;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,7 +96,6 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
       outputStream.write(StrUtils.CRLF_BYTE);
 
       if(response.body().isPresent()) {
-        outputStream.write(StrUtils.CRLF_BYTE);
         outputStream.write(response.body().get());
       }
 

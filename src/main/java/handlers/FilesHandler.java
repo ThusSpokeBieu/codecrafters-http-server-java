@@ -59,7 +59,7 @@ public class FilesHandler implements HttpHandler {
 
   private static HttpResponse postFile(final HttpRequest request) throws IOException {
     final var fileName = request.pathParams().getString("filename");
-    final Path path = Path.of("./tmp/data/codecrafters.io/http-server-tester/" + fileName);
+    final Path path = Path.of("/tmp/data/codecrafters.io/http-server-tester/" + fileName);
 
     Files.createDirectories(path.getParent());
 

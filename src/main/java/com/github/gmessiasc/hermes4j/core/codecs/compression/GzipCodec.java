@@ -48,17 +48,15 @@ public final class GzipCodec extends HttpCompression {
     final byte[] inputBytes = response.body().orElse("").getBytes(StandardCharsets.UTF_8);
 
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    final GZIPOutputStream gzipOs = new GZIPOutputStream(outputStream);
 
-    try (GZIPOutputStream gzipOs = new GZIPOutputStream(outputStream)) {
-      gzipOs.write(inputBytes);
-    }
-
-    final byte[] byteArray = outputStream.toByteArray();
+    gzipOs.write(inputBytes);
+    gzipOs.close();
 
     return HttpResponseBuilder
         .builder()
         .status(response.status())
-        .body(outputStream.toByteArray())
+        .body(outputStream.toString())
         .headers(response.headers())
         .version(response.httpVersion())
         .withContentLength()

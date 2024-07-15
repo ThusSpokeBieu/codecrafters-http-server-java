@@ -69,7 +69,6 @@ public final class GzipCodec extends HttpCompression {
         .headers(response.headers())
         .addHeader(HeaderUtils.CONTENT_ENCODING, this.name)
         .version(response.httpVersion())
-        .withContentLength()
         .build();
   }
 }

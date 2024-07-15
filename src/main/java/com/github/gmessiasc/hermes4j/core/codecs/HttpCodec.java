@@ -95,9 +95,9 @@ public class HttpCodec implements Codec<HttpRequest, HttpResponse> {
             counter++;
           }
         }
-
-        outputStream.write(StrUtils.CRLF_BYTE);
       }
+
+      outputStream.write(StrUtils.CRLF_BYTE);
 
       if(response.body().isPresent()) {
         outputStream.write(StrUtils.CRLF_BYTE);
